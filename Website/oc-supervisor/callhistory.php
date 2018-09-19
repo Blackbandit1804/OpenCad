@@ -12,7 +12,6 @@ This program is free software: you can redistribute it and/or modify
 
 This program comes with ABSOLUTELY NO WARRANTY; Use at your own risk.
 **/
-
     session_start();
 
     // TODO: Verify user has permission to be on this page
@@ -26,7 +25,6 @@ This program comes with ABSOLUTELY NO WARRANTY; Use at your own risk.
     {
       $name = $_SESSION['name'];
     }
-
 
     if ( $_SESSION['admin_privilege'] == 2)
     {
@@ -48,24 +46,22 @@ This program comes with ABSOLUTELY NO WARRANTY; Use at your own risk.
 
     }
 
-require_once(__DIR__ . '/../oc-config.php');
-require_once(__DIR__ . '/../oc-functions.php');
+    require_once(__DIR__ . '/../oc-config.php');
+    require_once(__DIR__ . '/../oc-functions.php');
+    include(__DIR__ . '/../actions/adminActions.php');
 
-    include("../actions/adminActions.php");
-
-    $accessMessage = "";
-    if(isset($_SESSION['accessMessage']))
+    $historyMessage = "";
+    if(isset($_SESSION['historyMessage']))
     {
-        $accessMessage = $_SESSION['accessMessage'];
-        unset($_SESSION['accessMessage']);
+        $historyMessage = $_SESSION['historyMessage'];
+        unset($_SESSION['historyMessage']);
     }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
-  <?php include "../oc-includes/header.inc.php"; ?>
-
+	<?php include "../oc-includes/header.inc.php"; ?>
   <body class="nav-md">
     <div class="container body">
       <div class="main_container">
@@ -95,19 +91,18 @@ require_once(__DIR__ . '/../oc-functions.php');
             <?php include "oc-admin-includes/sidebarNav.inc.php"; ?>
 
             <!-- /menu footer buttons -->
-            <div class="sidebar-footer hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="Go to Dashboard" href="<?php echo BASE_URL; ?>/dashboard.php">
-              <span class="fas fa-clipboard-list" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="FullScreen" onClick="toggleFullScreen()">
-              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="Logout" href="<?php echo BASE_URL; ?>/actions/logout.php?responder=<?php echo $_SESSION['identifier'];?>">
-              <span class="fas fa-sign-out-alt" aria-hidden="true"></span>
-              </a>
-              <a data-toggle="tooltip" data-placement="top" title="Need Help?" href="https://guides.opencad.io/">
-              <span class="fas fa-info-circle" aria-hidden="true"></span>
-              </a>
+            <a data-toggle="tooltip" data-placement="top" title="Go to Dashboard" href="<?php echo BASE_URL; ?>/dashboard.php">
+            <span class="fas fa-clipboard-list" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="FullScreen" onClick="toggleFullScreen()">
+            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="<?php echo BASE_URL; ?>/actions/logout.php?responder=<?php echo $_SESSION['identifier'];?>">
+            <span class="fas fa-sign-out-alt" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Need Help?" href="https://guides.opencad.io/">
+            <span class="fas fa-info-circle" aria-hidden="true"></span>
+            </a>
             </div>
             <!-- /menu footer buttons -->
           </div>
@@ -118,7 +113,7 @@ require_once(__DIR__ . '/../oc-functions.php');
           <div class="nav_menu">
             <nav>
               <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                <a id="menu_toggle"><i class="fas fa-bars"></i></a>
               </div>
 
               <ul class="nav navbar-nav navbar-right">
@@ -128,7 +123,7 @@ require_once(__DIR__ . '/../oc-functions.php');
                     <span class="fas fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
-                    <li><a href="<?php echo BASE_URL; ?>/profile.php"><i class="fas fa-user pull-right"></i>My Profile</a></li>
+                    <li><a href="../profile.php"><i class="fas fa-user pull-right"></i>My Profile</a></li>
                     <li><a href="<?php echo BASE_URL; ?>/actions/logout.php"><i class="fas fa-sign-out-alt pull-right"></i> Log Out</a></li>
                   </ul>
                 </li>
@@ -145,51 +140,28 @@ require_once(__DIR__ . '/../oc-functions.php');
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>CAD Administration</h3>
+                <h3>Call History</h3>
               </div>
-
-              <?php /* HIUE SEARCH FUNCTION FOR NOW
-              <div class="title_right">
-                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                  <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for...">
-                    <span class="input-group-btn">
-                      <button class="btn btn-default" type="button">Go!</button>
-                    </span>
-                  </div>
-                  <!-- ./ input-group -->
-                </div>
-                <!-- ./ col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search -->
-              </div>
-              <!-- ./ title_right -->
-              */?>
             </div>
 
             <div class="clearfix"></div>
-
             <div class="row">
               <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
+                <div class="x_panel" id="historyMessage">
                   <div class="x_title">
-                    <h2>Statistics at a glance</h2>
+                    <h2>Call History</h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      <li><a class="collapse-link"><i class="fas fa-chevron-up"></i></a>
                       </li>
-                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      <li><a class="close-link"><i class="fas fa-close"></i></a>
                       </li>
                     </ul>
                     <div class="clearfix"></div>
                   </div>
                   <!-- ./ x_title -->
                   <div class="x_content">
-                      <div class="row tile_count">
-                        <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-                          <span class="count_top"><i class="fa fa-user"></i> Total Users</span>
-                          <div class="count"><?php echo getUserCount();?></div>
-                        </div>
-                        <!-- ./ col-md-2 col-sm-4 col-xs-6 tile_stats_count -->
-                      </div>
-                      <!-- ./ row tile_count -->
+                    <?php echo $historyMessage;?>
+                     <?php getCallHistory();?>
                   </div>
                   <!-- ./ x_content -->
                 </div>
@@ -198,37 +170,7 @@ require_once(__DIR__ . '/../oc-functions.php');
               <!-- ./ col-md-12 col-sm-12 col-xs-12 -->
             </div>
             <!-- ./ row -->
-
-            <div class="clearfix"></div>
-            <div class="row">
-              <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>Access Requests</h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                      </li>
-                      <li><a class="close-link"><i class="fa fa-close"></i></a>
-                      </li>
-                    </ul>
-                    <div class="clearfix"></div>
-                  </div>
-                  <!-- ./ x_title -->
-                  <div class="x_content">
-                      <?php echo $accessMessage;?>
-
-                      <?php getPendingUsers();?>
-                  </div>
-                  <!-- ./ x_content -->
-                </div>
-                <!-- ./ x_panel -->
-              </div>
-              <!-- ./ col-md-12 col-sm-12 col-xs-12 -->
             </div>
-            <!-- ./ row -->
-
-
-          </div>
           <!-- "" -->
         </div>
         <!-- /page content -->
@@ -245,17 +187,23 @@ require_once(__DIR__ . '/../oc-functions.php');
     </div>
 
     <?php include "../oc-includes/jquery-colsolidated.inc.php"; ?>
-
     <script>
-		$(document).ready(function() {
+    $(document).ready(function() {
+        $('#call_history').DataTable({
 
-			$('#pendingUsers').DataTable({
+        });
+    });
+    </script>
+    <script>
+    $(document).ready(function() {
+
+      $('#pendingUsers').DataTable({
         paging: false,
         searching: false
-			});
+      });
 
-		});
-		</script>
+    });
+    </script>
     <script type="text/javascript" src="https://jira.opencad.io/s/a0c4d8ca8eced10a4b49aaf45ec76490-T/-f9bgig/77001/9e193173deda371ba40b4eda00f7488e/2.0.24/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=ede74ac1"></script>
   </body>
 </html>
